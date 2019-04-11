@@ -40,15 +40,6 @@ MCU_LD = ../buildroot/$(LOWER_MCU).ld
 # The name of your project (used to name the compiled .hex file)
 TARGET = main
 
-# Those that specify a NO_ARDUINO environment variable will
-# be able to use this Makefile with no Arduino dependency.
-# Please note that if ARDUINOPATH was set, it will override
-# the NO_ARDUINO behaviour.
-ifndef NO_ARDUINO
-# Path to your arduino installation
-ARDUINOPATH ?= /Applications/Arduino.app/Contents/Java
-endif
-
 # configurable options
 OPTIONS = -DF_CPU=48000000 -DUSB_SERIAL -DLAYOUT_US_ENGLISH -DUSING_MAKEFILE
 
@@ -60,37 +51,13 @@ OPTIONS += -D__$(MCU)__ -DARDUINO=10805 -DTEENSYDUINO=144
 #CPUARCH = cortex-m4
 CPUARCH = cortex-m0plus
 
-
-# Other Makefiles and project templates for Teensy 3.x:
-#
-# https://github.com/apmorton/teensy-template
-# https://github.com/xxxajk/Arduino_Makefile_master
-# https://github.com/JonHylands/uCee
-
-
 #************************************************************************
 # Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
 # To use this makefile without Arduino, copy the resources from these
 # locations and edit the pathnames.  The rest of Arduino is not needed.
 #************************************************************************
 
-ifdef ARDUINOPATH
-
-# path location for Teensy Loader, teensy_post_compile and teensy_reboot (on Linux)
-TOOLSPATH = $(abspath $(ARDUINOPATH)/hardware/tools)
-
-# path location for Arduino libraries (currently not used)
-LIBRARYPATH = $(abspath $(ARDUINOPATH)/libraries)
-
-# path location for the arm-none-eabi compiler
-COMPILERPATH = $(abspath $(ARDUINOPATH)/hardware/tools/arm/bin)
-
-else
-# Default to the normal GNU/Linux compiler path if NO_ARDUINO
-# and ARDUINOPATH was not set.
-COMPILERPATH ?= /usr/bin
-
-endif
+COMPILERPATH = /usr/local/bin
 
 #************************************************************************
 # Settings below this point usually do not need to be edited
