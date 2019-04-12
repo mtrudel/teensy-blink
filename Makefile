@@ -93,18 +93,17 @@ OBJS := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o)
 
 # the actual makefile rules (all .o files built by GNU make's default implicit rules)
 
-all: $(TARGET).hex
+all: install
 
 $(TARGET).elf: $(OBJS) $(MCU_LD)
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 
 %.hex: %.elf
 	$(SIZE) $<
-	$(OBJCOPY) -O ihex -R .eeprom $< $@
-ifneq (,$(wildcard $(TOOLSPATH)))
-	$(TOOLSPATH)/teensy_post_compile -file=$(basename $@) -path=$(shell pwd) -tools=$(TOOLSPATH)
-	-$(TOOLSPATH)/teensy_reboot
-endif
+	$(OBJCOPY) -O ihex -R .eeprom -R .fuse -R .lock -R .signature $< $@
+
+install: $(TARGET).hex
+	$(COMPILERPATH)/teensy_loader_cli --mcu=$(MCU) -w -v $<
 
 # compiler generated dependency info
 -include $(OBJS:.o=.d)
