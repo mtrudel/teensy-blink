@@ -1,3 +1,3 @@
-void lights_setup(int brightness);
-void paint_color(int color);
+void lights_setup();
+void paint(int position, int color, int lightness, int decay);
 void lights_rainbow(int cycleTime);

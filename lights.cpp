@@ -1,4 +1,6 @@
+#include "lights.h"
 #include <OctoWS2811.h>
+
 
 const int ledsPerStrip = 60;
 
@@ -9,7 +11,6 @@ const int config = WS2811_GRB | WS2811_800kHz;
 
 OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config);
 
-int rainbowColors[180];
 
 unsigned int h2rgb(unsigned int v1, unsigned int v2, unsigned int hue)
 {
@@ -46,47 +47,34 @@ int makeColor(unsigned int hue, unsigned int saturation, unsigned int lightness)
 	return (red << 16) | (green << 8) | blue;
 }
 
-void lights_setup(int brightness) {
+void lights_setup() {
   pinMode(1, OUTPUT);
   digitalWrite(1, HIGH);
-  for (int i=0; i<180; i++) {
-    int hue = i * 2;
-    int saturation = 100;
-    // pre-compute the 180 rainbow colors
-    rainbowColors[i] = makeColor(hue, saturation, brightness);
-  }
   digitalWrite(1, LOW);
   leds.begin();
 }
 
-// cycleTime is the number of milliseconds to shift through
-// the entire 360 degrees of the color wheel:
-// Red -> Orange -> Yellow -> Green -> Blue -> Violet -> Red
-//
-void paint_color(int color)
+void paint(int position, int color, int lightness, int decay) 
 {
+  int black = makeColor(0, 0, 0);
+  int colors[decay];
+  for (int x = 0; x < decay; x++) {
+    int l = (x == decay - 1)? lightness : 2 * (x + 1);
+    colors[x] = makeColor(color, 100, l);
+  }
+
   for (int x = 0; x < ledsPerStrip; x++) {
-    int index = (color + x) % 180;
-    leds.setPixel(x, rainbowColors[index]);
+    if (x < position) {
+      leds.setPixel(x, black);
+    } else if (x < position + decay) {
+      leds.setPixel(x, colors[x - position]);
+      Serial.print(x-position);
+      Serial.print(" ");
+      Serial.println((decay - (x-position)) * lightness / decay);
+    } else {
+      leds.setPixel(x, black);
+    }
   }
   leds.show();
 }
-
-void lights_rainbow(int cycleTime)
-{
-  int color, x, wait;
-
-  wait = cycleTime * 1000 / ledsPerStrip;
-  for (color=0; color < 180; color++) {
-    digitalWrite(1, HIGH);
-    for (x=0; x < ledsPerStrip; x++) {
-      int index = (color + x) % 180;
-      leds.setPixel(x, rainbowColors[index]);
-    }
-    leds.show();
-    digitalWrite(1, LOW);
-    delayMicroseconds(wait);
-  }
-}
-
 

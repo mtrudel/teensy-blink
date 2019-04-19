@@ -5,23 +5,22 @@
 #include "encoder.h"
 #include "lights.h"
 
-int brightness = 30;
+int position = 0;
 int color = 140;
 
 void handle_1(int increment) {
-  brightness += increment;
-  brightness = min(max(brightness, 0), 255);
-  lights_setup(brightness);
-  paint_color(color);
-  Serial.print("Brightness: ");
-  Serial.println(brightness);
+  position += increment;
+  position = (60 + position) % 60;
+  paint(position, color, 30, 10);
+  Serial.print("Position: ");
+  Serial.println(position);
 }
 
 void handle_2(int increment) {
   color += 2 * increment;
-  color = (180 + color) % 180;
-  paint_color(color);
-  Serial.print("Offset: ");
+  color = (360 + color) % 360;
+  paint(position, color, 30, 10);
+  Serial.print("Color: ");
   Serial.println(color);
 }
 
@@ -29,8 +28,8 @@ int main() {
   encoder_setup();
   encoder_set_handler_1(handle_1);
   encoder_set_handler_2(handle_2);
-  lights_setup(brightness);
-  paint_color(color);
+  lights_setup();
+  paint(position, color, 30, 10);
 
   Serial.begin(9600);
 
