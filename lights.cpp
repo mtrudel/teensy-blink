@@ -64,10 +64,13 @@ void paint(int position, int color, int lightness, int decay)
   }
 
   for (int x = 0; x < ledsPerStrip; x++) {
-    if (x < position) {
-      leds.setPixel(x, black);
-    } else if (x < position + decay) {
+    // TODO this logic is terrible
+    if (x >= position && x < position + decay) {
       leds.setPixel(x, colors[x - position]);
+    } else if (x >= position && position + decay >= ledsPerStrip) {
+      leds.setPixel(x, colors[x - position]);
+    } else if (x < ((position + decay) % ledsPerStrip) && position + decay >= ledsPerStrip) {
+      leds.setPixel(x, colors[x]);
     } else {
       leds.setPixel(x, black);
     }

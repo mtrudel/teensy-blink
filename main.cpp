@@ -5,21 +5,20 @@
 #include "encoder.h"
 #include "lights.h"
 
+int rate = 10;
 int position = 0;
 int color = 140;
 
 void handle_1(int increment) {
-  position += increment;
-  position = (60 + position) % 60;
-  paint(position, color, 30, 10);
-  Serial.print("Position: ");
-  Serial.println(position);
+  rate += increment;
+  rate = max(-60, min(60, rate));
+  Serial.print("Rate: ");
+  Serial.println(rate);
 }
 
 void handle_2(int increment) {
   color += 2 * increment;
   color = (360 + color) % 360;
-  paint(position, color, 30, 10);
   Serial.print("Color: ");
   Serial.println(color);
 }
@@ -35,7 +34,15 @@ int main() {
 
   for(;;) {
     encoder_process();
-    delayMicroseconds(25000);
-    handle_1(1);
+    if (rate > 0) {
+      position += 1;
+      delayMicroseconds(1000000 / rate);
+    } else if (rate < 0) {
+      position -= 1;
+      delayMicroseconds(-1000000 / rate);
+    }
+    position = (position + 60) % 60;
+
+    paint(position, color, 30, 10);
   }
 }
