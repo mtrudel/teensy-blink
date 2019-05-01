@@ -35,5 +35,7 @@ int main() {
 
   for(;;) {
     encoder_process();
+    delayMicroseconds(25000);
+    handle_1(1);
   }
 }

@@ -59,7 +59,7 @@ void paint(int position, int color, int lightness, int decay)
   int black = makeColor(0, 0, 0);
   int colors[decay];
   for (int x = 0; x < decay; x++) {
-    int l = (x == decay - 1)? lightness : 2 * (x + 1);
+    int l = (x == decay - 1)? lightness : 3 * (x + 1) / 2;
     colors[x] = makeColor(color, 100, l);
   }
 
@@ -68,9 +68,6 @@ void paint(int position, int color, int lightness, int decay)
       leds.setPixel(x, black);
     } else if (x < position + decay) {
       leds.setPixel(x, colors[x - position]);
-      Serial.print(x-position);
-      Serial.print(" ");
-      Serial.println((decay - (x-position)) * lightness / decay);
     } else {
       leds.setPixel(x, black);
     }
